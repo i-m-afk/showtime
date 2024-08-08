@@ -9,4 +9,4 @@ CREATE TABLE booking_details (
 );
 
 -- +goose Down
-Drip TABLE booking_details;
+DROP TABLE booking_details;
