@@ -14,5 +14,6 @@ const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error("Define DATABASE_URL in .env file");
 }
+console.log("connected to database");
 
 export const pool = new Pool({ connectionString });
