@@ -1,5 +1,5 @@
--- name: GetAllUsers :many
-SELECT * FROM users;
+-- name: GetUserById :one
+SELECT * FROM users WHERE id = $1;
 
 -- name: CreateUser :one
 INSERT INTO users (id, username, name, email, role, phone, order_id, password)

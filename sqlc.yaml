@@ -10,7 +10,7 @@ sql:
     engine: "postgresql"
     codegen:
       - plugin: ts
-        out: "dist/generated"
+        out: "src/generated"
         options:
           runtime: node
           driver: pg
