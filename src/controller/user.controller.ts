@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { UserModel } from "../models/userModel.js";
-import { User } from "../types/userTypes";
-import { responseHandler } from "../utils/jsonResponse.js";
+import { User } from "../types/userTypes.js";
 
-export const createUser = async (
+export const createUserController = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -11,17 +10,11 @@ export const createUser = async (
   try {
     const user: User = req.body;
     const response = await UserModel.createUser(user);
-    if (response === null) {
-      throw new Error("error creating user");
-    }
-    responseHandler.successResponse(
-      res,
-      201,
-      "user created successfully",
-      response as unknown as JSON,
-    );
+    res
+      .status(201)
+      .json({ message: "User created successfully", data: response });
   } catch (err) {
-    console.error("error creating user, ", err);
-    responseHandler.errorResponse(res, 501, "Internal Server Error");
+    console.error("Error creating user, ", err);
+    res.status(501).json({ message: "Internal Server Error" });
   }
 };
