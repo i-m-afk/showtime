@@ -9,7 +9,7 @@ CREATE TABLE movies (
     original_title VARCHAR(255) NOT NULL,
     title VARCHAR(255) NOT NULL,
     overview TEXT,
-    popularity DECIMAL(5,2),
+    popularity DECIMAL(7,3),
     release_date DATE,
     video BOOLEAN,
     vote_average DECIMAL(2,1), -- average rating
