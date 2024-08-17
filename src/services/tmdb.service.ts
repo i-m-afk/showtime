@@ -2,6 +2,9 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import fetch, { RequestInit } from "node-fetch";
+import { Movie } from "../types/movieTypes";
+import { addMovie } from "../generated/movies_sql.js";
+import { pool } from "../database/connection.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,7 +42,8 @@ export const fetchMovies = async (
       throw new Error(`Error fetching movies: ${response.statusText}`);
     }
     const data = await response.json();
-    return data;
+    const movies: Movie[] = data.results.map(mapMovies);
+    return movies;
   } catch (err) {
     console.error("Error fetching movies:", err);
   } finally {
@@ -47,11 +51,44 @@ export const fetchMovies = async (
   }
 };
 
+const mapMovies = (data: any): Movie => {
+  return {
+    id: data.id,
+    backdropPath: data.backdrop_path || null,
+    adult: data.adult,
+    genreIds: data.genre_ids || null,
+    originalTitle: data.original_title,
+    overview: data.overview || null,
+    popularity: data.popularity ? data.popularity.toString() : null,
+    posterPath: data.poster_path || null,
+    releaseDate: data.release_date ? new Date(data.release_date) : null,
+    title: data.title,
+    video: data.video,
+    voteAverage: data.vote_average,
+    language: data.original_language || null,
+    voteCount: data.vote_count,
+  };
+};
+
 // run this script every 24 hours
 setInterval(() => {
-  fetchMovies(url, options).then((data) => {
-    if (data) {
-      console.log("Data fetched successfully:", data);
+  fetchMovies(url, options).then((movies: Movie[]) => {
+    if (movies) {
+      movies.forEach((movie) => {
+        addMovie(pool, movie);
+      });
     }
   });
-}, 10000); // for testing purposes, change this to 86400000 (24 hours)
+}, 86400000);
+
+// for testing commentout above and run below
+// fetchMovies(url, options).then((movies: Movie[]) => {
+//     if (movies) {
+//       movies.forEach((movie) => {
+//         const m : Movie = addMovie(pool, movie);
+//          setTimeout({
+//            console.log(m);
+//          }, 500);
+//       });
+//     }
+//   });
