@@ -4,6 +4,7 @@
 2. Run `npm install`
 3. Install `goose` and `sqlc`
 4. Setup .env file with database URL something like: `DATABASE_URL="postgres://postgres:postgres@localhost:5432/showtime"`
+   also, `TMDB_API_ACCESS_KEY="<ASK ME THE KEY>"`
 5. Run goose migration from `sql/schema` directory i.e `goose -dir sql/schema postgres "postgres://postgres:postgres@localhost:5432/showtime" up` (or down)
 6. Run `sqlc generate` from root to generate the go code from the SQL queries this will generate typescript code in `src/generated` folder
 7. run `npm start` to start the server
