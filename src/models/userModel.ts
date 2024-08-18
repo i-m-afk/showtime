@@ -7,8 +7,8 @@ export class UserModel {
     const result = await createUser(pool, user);
     return result ? result : null;
   }
-  static async getUserById(id: string): Promise<User | null> {
-    const result = await getUserById(pool, { id });
+  static async getUserById(userid: string): Promise<User | null> {
+    const result = await getUserById(pool, { userid });
     return result ? result : null;
   }
 }

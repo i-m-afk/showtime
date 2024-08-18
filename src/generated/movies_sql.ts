@@ -5,10 +5,10 @@ interface Client {
 }
 
 export const getAllMoviesQuery = `-- name: GetAllMovies :many
-SELECT id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at FROM movies`;
+SELECT movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at FROM movies`;
 
 export interface GetAllMoviesRow {
-    id: number;
+    movieid: number;
     adult: boolean;
     genreIds: number[] | null;
     posterPath: string | null;
@@ -34,7 +34,7 @@ export async function getAllMovies(client: Client): Promise<GetAllMoviesRow[]> {
     });
     return result.rows.map(row => {
         return {
-            id: row[0],
+            movieid: row[0],
             adult: row[1],
             genreIds: row[2],
             posterPath: row[3],
@@ -55,15 +55,15 @@ export async function getAllMovies(client: Client): Promise<GetAllMoviesRow[]> {
 }
 
 export const getMovieByIdQuery = `-- name: GetMovieById :one
-SELECT id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at FROM MOVIES
-WHERE id = $1`;
+SELECT movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at FROM movies
+WHERE movieid = $1`;
 
 export interface GetMovieByIdArgs {
-    id: number;
+    movieid: number;
 }
 
 export interface GetMovieByIdRow {
-    id: number;
+    movieid: number;
     adult: boolean;
     genreIds: number[] | null;
     posterPath: string | null;
@@ -84,7 +84,7 @@ export interface GetMovieByIdRow {
 export async function getMovieById(client: Client, args: GetMovieByIdArgs): Promise<GetMovieByIdRow | null> {
     const result = await client.query({
         text: getMovieByIdQuery,
-        values: [args.id],
+        values: [args.movieid],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -92,7 +92,7 @@ export async function getMovieById(client: Client, args: GetMovieByIdArgs): Prom
     }
     const row = result.rows[0];
     return {
-        id: row[0],
+        movieid: row[0],
         adult: row[1],
         genreIds: row[2],
         posterPath: row[3],
@@ -112,12 +112,12 @@ export async function getMovieById(client: Client, args: GetMovieByIdArgs): Prom
 }
 
 export const addMovieQuery = `-- name: AddMovie :one
-INSERT INTO movies (id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count)
+INSERT INTO movies (movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-returning id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at`;
+returning movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at`;
 
 export interface AddMovieArgs {
-    id: number;
+    movieid: number;
     adult: boolean;
     genreIds: number[] | null;
     posterPath: string | null;
@@ -134,7 +134,7 @@ export interface AddMovieArgs {
 }
 
 export interface AddMovieRow {
-    id: number;
+    movieid: number;
     adult: boolean;
     genreIds: number[] | null;
     posterPath: string | null;
@@ -155,7 +155,7 @@ export interface AddMovieRow {
 export async function addMovie(client: Client, args: AddMovieArgs): Promise<AddMovieRow | null> {
     const result = await client.query({
         text: addMovieQuery,
-        values: [args.id, args.adult, args.genreIds, args.posterPath, args.backdropPath, args.language, args.originalTitle, args.title, args.overview, args.popularity, args.releaseDate, args.video, args.voteAverage, args.voteCount],
+        values: [args.movieid, args.adult, args.genreIds, args.posterPath, args.backdropPath, args.language, args.originalTitle, args.title, args.overview, args.popularity, args.releaseDate, args.video, args.voteAverage, args.voteCount],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -163,7 +163,7 @@ export async function addMovie(client: Client, args: AddMovieArgs): Promise<AddM
     }
     const row = result.rows[0];
     return {
-        id: row[0],
+        movieid: row[0],
         adult: row[1],
         genreIds: row[2],
         posterPath: row[3],
@@ -198,8 +198,8 @@ SET
     video = COALESCE($11, video),
     genre_ids = COALESCE($12, genre_ids),
     updated_at = NOW()
-WHERE id = $13
-RETURNING id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at`;
+WHERE movieid = $13
+RETURNING movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at`;
 
 export interface UpdateMovieArgs {
     title: string | null;
@@ -214,11 +214,11 @@ export interface UpdateMovieArgs {
     adult: boolean | null;
     video: boolean | null;
     genreIds: number[] | null;
-    id: number;
+    movieid: number;
 }
 
 export interface UpdateMovieRow {
-    id: number;
+    movieid: number;
     adult: boolean;
     genreIds: number[] | null;
     posterPath: string | null;
@@ -239,7 +239,7 @@ export interface UpdateMovieRow {
 export async function updateMovie(client: Client, args: UpdateMovieArgs): Promise<UpdateMovieRow | null> {
     const result = await client.query({
         text: updateMovieQuery,
-        values: [args.title, args.overview, args.popularity, args.posterPath, args.backdropPath, args.language, args.releaseDate, args.voteAverage, args.voteCount, args.adult, args.video, args.genreIds, args.id],
+        values: [args.title, args.overview, args.popularity, args.posterPath, args.backdropPath, args.language, args.releaseDate, args.voteAverage, args.voteCount, args.adult, args.video, args.genreIds, args.movieid],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -247,7 +247,7 @@ export async function updateMovie(client: Client, args: UpdateMovieArgs): Promis
     }
     const row = result.rows[0];
     return {
-        id: row[0],
+        movieid: row[0],
         adult: row[1],
         genreIds: row[2],
         posterPath: row[3],
@@ -268,15 +268,15 @@ export async function updateMovie(client: Client, args: UpdateMovieArgs): Promis
 
 export const deleteMovieQuery = `-- name: DeleteMovie :one
 DELETE FROM movies
-WHERE id = $1
-returning id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at`;
+WHERE movieid = $1
+returning movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at`;
 
 export interface DeleteMovieArgs {
-    id: number;
+    movieid: number;
 }
 
 export interface DeleteMovieRow {
-    id: number;
+    movieid: number;
     adult: boolean;
     genreIds: number[] | null;
     posterPath: string | null;
@@ -297,7 +297,7 @@ export interface DeleteMovieRow {
 export async function deleteMovie(client: Client, args: DeleteMovieArgs): Promise<DeleteMovieRow | null> {
     const result = await client.query({
         text: deleteMovieQuery,
-        values: [args.id],
+        values: [args.movieid],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -305,7 +305,7 @@ export async function deleteMovie(client: Client, args: DeleteMovieArgs): Promis
     }
     const row = result.rows[0];
     return {
-        id: row[0],
+        movieid: row[0],
         adult: row[1],
         genreIds: row[2],
         posterPath: row[3],

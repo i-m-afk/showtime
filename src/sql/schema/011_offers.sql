@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE offers (
-    id UUID PRIMARY KEY,
+    offerid UUID PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     description TEXT,
     discount_percentage DECIMAL(5, 2) NOT NULL CHECK (discount_percentage >= 0 AND discount_percentage <= 100),
