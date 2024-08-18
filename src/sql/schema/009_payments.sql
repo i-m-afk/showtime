@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE payments (
     id UUID PRIMARY KEY,
-    booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+    booking_id UUID NOT NULL REFERENCES bookings(bookingid) ON DELETE CASCADE,
     payment_method VARCHAR(50) NOT NULL, -- credit card, debit card, UPI, etc.
     payment_status VARCHAR(50) NOT NULL, -- success, failed
     payment_time TIMESTAMP NOT NULL DEFAULT NOW(),

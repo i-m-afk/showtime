@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE movies (
-    id  INT PRIMARY KEY,
+    movieid  INT PRIMARY KEY,
     adult BOOLEAN NOT NULL,
     genre_ids INT[],
     poster_path VARCHAR(255),

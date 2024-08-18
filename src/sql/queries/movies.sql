@@ -2,11 +2,11 @@
 SELECT * FROM movies;
 
 -- name: GetMovieById :one
-SELECT * FROM MOVIES
-WHERE id = $1;
+SELECT * FROM movies
+WHERE movieid = $1;
 
 -- name: AddMovie :one
-INSERT INTO movies (id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count)
+INSERT INTO movies (movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 returning *;
 
@@ -26,10 +26,10 @@ SET
     video = COALESCE(sqlc.narg('video'), video),
     genre_ids = COALESCE(sqlc.narg('genre_ids'), genre_ids),
     updated_at = NOW()
-WHERE id = sqlc.arg('id')
-RETURNING id, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at;
+WHERE movieid = sqlc.arg('movieid')
+RETURNING movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at;
 
 -- name: DeleteMovie :one
 DELETE FROM movies
-WHERE id = $1
+WHERE movieid = $1
 returning *;

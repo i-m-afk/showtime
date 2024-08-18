@@ -1,5 +1,5 @@
 export interface Movie {
-  id: number;
+  movieid: number;
   adult: boolean;
   genreIds: number[] | null;
   posterPath: string | null;
@@ -28,5 +28,5 @@ export interface UpdateMovie {
   adult: boolean | null;
   video: boolean | null;
   genreIds: number[] | null;
-  id: number;
+  movieid: number;
 }

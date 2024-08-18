@@ -19,8 +19,8 @@ export class MovieModel {
     return result;
   }
 
-  static async getMovieById(id: number): Promise<Movie | null> {
-    const movie = await getMovieById(pool, { id });
+  static async getMovieById(movieid: number): Promise<Movie | null> {
+    const movie = await getMovieById(pool, { movieid });
     return movie ? movie : null;
   }
 
@@ -29,8 +29,8 @@ export class MovieModel {
     return result ? result : null;
   }
 
-  static async deleteMovie(id: number): Promise<Movie | null> {
-    const deltedMovie = await deleteMovie(pool, { id });
+  static async deleteMovie(movieid: number): Promise<Movie | null> {
+    const deltedMovie = await deleteMovie(pool, { movieid });
     return deltedMovie ? deltedMovie : null;
   }
 }

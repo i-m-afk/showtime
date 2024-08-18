@@ -35,7 +35,7 @@ const options: RequestInit = {
 export const fetchMovies = async (
   url: string,
   options: RequestInit,
-): Promise<any | undefined> => {
+): Promise<Movie[] | undefined> => {
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
@@ -46,6 +46,7 @@ export const fetchMovies = async (
     return movies;
   } catch (err) {
     console.error("Error fetching movies:", err);
+    throw err; // error propagation
   } finally {
     console.log("Fetching movies completed");
   }
@@ -53,7 +54,7 @@ export const fetchMovies = async (
 
 const mapMovies = (data: any): Movie => {
   return {
-    id: data.id,
+    movieid: data.id,
     backdropPath: data.backdrop_path || null,
     adult: data.adult,
     genreIds: data.genre_ids || null,
@@ -70,25 +71,42 @@ const mapMovies = (data: any): Movie => {
   };
 };
 
-// run this script every 24 hours
-setInterval(() => {
-  fetchMovies(url, options).then((movies: Movie[]) => {
-    if (movies) {
-      movies.forEach((movie) => {
-        addMovie(pool, movie);
-      });
+// Function to save movies to the database
+const saveMoviesToDatabase = async (movies: Movie[]) => {
+  for (const movie of movies) {
+    try {
+      const res = await addMovie(pool, movie);
+      console.log("Movie added:", res);
+    } catch (err: any) {
+      if (err.code === "23505") {
+        console.log("Movie already in database:", movie.movieid);
+      } else {
+        console.error("Error adding movie:", err);
+      }
     }
-  });
+  }
+};
+
+// Run the script every 24 hours
+setInterval(async () => {
+  try {
+    const movies = await fetchMovies(url, options);
+    if (movies) {
+      await saveMoviesToDatabase(movies);
+    }
+  } catch (err) {
+    console.error("Error in the scheduled fetch process:", err);
+  }
 }, 86400000);
 
-// for testing commentout above and run below
-// fetchMovies(url, options).then((movies: Movie[]) => {
-//     if (movies) {
-//       movies.forEach((movie) => {
-//         const m : Movie = addMovie(pool, movie);
-//          setTimeout({
-//            console.log(m);
-//          }, 500);
-//       });
-//     }
-//   });
+// For testing: Comment out the setInterval above and run below
+(async () => {
+  try {
+    const movies = await fetchMovies(url, options);
+    if (movies) {
+      await saveMoviesToDatabase(movies);
+    }
+  } catch (err) {
+    console.error("Error in the fetch process:", err);
+  }
+})();
