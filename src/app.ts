@@ -6,6 +6,7 @@ import { userRouter } from "./routes/user.router.js";
 import "./services/tmdb.service.js";
 import { movieRouter } from "./routes/movie.router.js";
 import { theaterRouter } from "./routes/theater.router.js";
+import { showtimeRouter } from "./routes/showtime.router.js";
 
 const app = express();
 const PORT = 3000;
@@ -24,6 +25,7 @@ app.use(
 app.use("/user", userRouter);
 app.use("/movie", movieRouter);
 app.use("/theater", theaterRouter);
+app.use("/showtime", showtimeRouter);
 
 const server = app
   .listen(PORT, HOST, () => {

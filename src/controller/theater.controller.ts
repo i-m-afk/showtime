@@ -27,7 +27,6 @@ export const getTheaterByMovieAndLocationController = async (
   try {
     const movieid = parseInt(req.query.movieid as string);
     const city = req.query.city as string;
-    console.log(movieid, city);
     const response = await TheaterModel.getTheatersByMovieAndLocation(
       movieid,
       city,
