@@ -3,6 +3,7 @@ import {
   deleteMovieController,
   getAllMoviesController,
   getMovieByIdController,
+  getMoviesByMovieNameController,
   updateMovieController,
 } from "../controller/movie.controller.js";
 
@@ -12,5 +13,6 @@ movieRouter.put("/", updateMovieController);
 movieRouter.get("/:id", getMovieByIdController);
 movieRouter.get("/", getAllMoviesController);
 movieRouter.delete("/:id", deleteMovieController);
+movieRouter.get("/search/:movie", getMoviesByMovieNameController);
 
 export { movieRouter };

@@ -24,8 +24,12 @@ SELECT
     seat_type,
     row,
     col
-FROM 
-    parsed_json`;
+FROM
+    parsed_json
+ON CONFLICT (seat_number, row, col, screen_id)
+  DO UPDATE SET
+    seat_type = EXCLUDED.seat_type,
+    updated_at = NOW()`;
 
 export interface InsertSeatsArgs {
     parseJson: any;
@@ -35,6 +39,62 @@ export async function insertSeats(client: Client, args: InsertSeatsArgs): Promis
     await client.query({
         text: insertSeatsQuery,
         values: [args.parseJson],
+        rowMode: "array"
+    });
+}
+
+export const getSeatsByScreenIDQuery = `-- name: GetSeatsByScreenID :many
+
+
+SELECT
+    seat_number,
+    row,
+    col,
+    seat_type
+FROM
+    seats
+WHERE
+    screen_id = $1`;
+
+export interface GetSeatsByScreenIDArgs {
+    screenId: string;
+}
+
+export interface GetSeatsByScreenIDRow {
+    seatNumber: number;
+    row: number;
+    col: number;
+    seatType: string;
+}
+
+export async function getSeatsByScreenID(client: Client, args: GetSeatsByScreenIDArgs): Promise<GetSeatsByScreenIDRow[]> {
+    const result = await client.query({
+        text: getSeatsByScreenIDQuery,
+        values: [args.screenId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            seatNumber: row[0],
+            row: row[1],
+            col: row[2],
+            seatType: row[3]
+        };
+    });
+}
+
+export const deleteAllSeatsByScreenIDQuery = `-- name: DeleteAllSeatsByScreenID :exec
+DELETE FROM seats
+WHERE screen_id = $1`;
+
+export interface DeleteAllSeatsByScreenIDArgs {
+    screenId: string;
+}
+
+export async function deleteAllSeatsByScreenID(client: Client, args: DeleteAllSeatsByScreenIDArgs): Promise<void> {
+    await client.query({
+        text: deleteAllSeatsByScreenIDQuery,
+        values: [args.screenId],
         rowMode: "array"
     });
 }

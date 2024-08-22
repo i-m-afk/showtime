@@ -20,7 +20,11 @@ SELECT
     row,
     col
 FROM
-    parsed_json;
+    parsed_json
+ON CONFLICT (seat_number, row, col, screen_id)
+  DO UPDATE SET
+    seat_type = EXCLUDED.seat_type,
+    updated_at = NOW();
 
 -- sqlc was failing to generate correct code for this query, so had to create a CTE to parse the json and then insert the values into the seats table.
 -- INSERT INTO seats (seat_number, screen_id, seat_type, row, col)
@@ -32,3 +36,18 @@ FROM
 --           (elem ->> 'col')::INT
 --       FROM jsonb_array_elements($1::jsonb) as elem;
 
+
+-- name: GetSeatsByScreenID :many
+SELECT
+    seat_number,
+    row,
+    col,
+    seat_type
+FROM
+    seats
+WHERE
+    screen_id = $1;
+
+-- name: DeleteAllSeatsByScreenID :exec
+DELETE FROM seats
+WHERE screen_id = $1;

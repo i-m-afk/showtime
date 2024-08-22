@@ -68,3 +68,21 @@ export const deleteMovieController = async (req: Request, res: Response) => {
     res.status(501).json({ message: "Internal Server Error" });
   }
 };
+
+export const getMoviesByMovieNameController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const movieName = req.params.movie;
+    const response = await MovieModel.getMoviesByTitle(movieName);
+    res.status(200).json({ message: "Movies fetched", data: response });
+    if (!response) {
+      res.status(404).json({ message: "Movie not found" });
+    }
+  } catch (err) {
+    console.error("Error fetching movie, ", err);
+    res.status(501).json({ message: "Internal Server Error" });
+  }
+};

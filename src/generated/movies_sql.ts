@@ -324,3 +324,57 @@ export async function deleteMovie(client: Client, args: DeleteMovieArgs): Promis
     };
 }
 
+export const getMoviesByTitleQuery = `-- name: GetMoviesByTitle :many
+SELECT movieid, adult, genre_ids, poster_path, backdrop_path, language, original_title, title, overview, popularity, release_date, video, vote_average, vote_count, created_at, updated_at FROM movies WHERE title ILIKE '%' || $1 || '%'`;
+
+export interface GetMoviesByTitleArgs {
+    name: string | null;
+}
+
+export interface GetMoviesByTitleRow {
+    movieid: number;
+    adult: boolean;
+    genreIds: number[] | null;
+    posterPath: string | null;
+    backdropPath: string | null;
+    language: string | null;
+    originalTitle: string;
+    title: string;
+    overview: string | null;
+    popularity: string | null;
+    releaseDate: Date | null;
+    video: boolean | null;
+    voteAverage: string | null;
+    voteCount: number | null;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function getMoviesByTitle(client: Client, args: GetMoviesByTitleArgs): Promise<GetMoviesByTitleRow[]> {
+    const result = await client.query({
+        text: getMoviesByTitleQuery,
+        values: [args.name],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            movieid: row[0],
+            adult: row[1],
+            genreIds: row[2],
+            posterPath: row[3],
+            backdropPath: row[4],
+            language: row[5],
+            originalTitle: row[6],
+            title: row[7],
+            overview: row[8],
+            popularity: row[9],
+            releaseDate: row[10],
+            video: row[11],
+            voteAverage: row[12],
+            voteCount: row[13],
+            createdAt: row[14],
+            updatedAt: row[15]
+        };
+    });
+}
+

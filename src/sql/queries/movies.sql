@@ -33,3 +33,6 @@ RETURNING movieid, adult, genre_ids, poster_path, backdrop_path, language, origi
 DELETE FROM movies
 WHERE movieid = $1
 returning *;
+
+-- name: GetMoviesByTitle :many
+SELECT * FROM movies WHERE title ILIKE '%' || @name || '%';
