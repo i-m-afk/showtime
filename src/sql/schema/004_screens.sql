@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE screens (
-    screenid UUID PRIMARY KEY,
+    screenid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     theater_id UUID NOT NULL REFERENCES theaters(theaterid)  ON DELETE CASCADE,
     type VARCHAR(15), -- 2D, 3D, IMAX etc.
     total_seats INT NOT NULL,

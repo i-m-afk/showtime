@@ -1,6 +1,6 @@
 -- name: AddTheater :one
-INSERT INTO theaters(theaterid, name, image, address, city, state, pin_code, latitude)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO theaters(name, image, address, city, state, pin_code, latitude)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 returning *;
 
 -- name: GetTheaterByID :one
@@ -23,12 +23,14 @@ SELECT DISTINCT
     s.seats_left,
     m.movieid,
     m.title AS movie_title,
-    m.language AS movie_language
+    m.language AS movie_language,
+    st.show_date,
+    st.base_price
 FROM theaters t
 JOIN screens s ON t.theaterid = s.theater_id
 JOIN showtimes st ON s.screenid = st.screen_id
 JOIN movies m ON st.movie_id = m.movieid
 WHERE m.movieid = $1
   AND LOWER(t.city) = LOWER($2)
-  AND st.show_time > CURRENT_TIME;
-
+  AND st.show_time > CURRENT_TIME
+ORDER BY st.show_date ASC;

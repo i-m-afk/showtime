@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE reviews (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     movie_id INT NOT NULL REFERENCES movies(movieid) ON DELETE CASCADE ,
     user_id UUID NOT NULL REFERENCES users(userid) ON DELETE CASCADE ,
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),

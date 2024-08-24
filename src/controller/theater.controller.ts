@@ -31,7 +31,7 @@ export const getTheaterByMovieAndLocationController = async (
       movieid,
       city,
     );
-    res.status(201).json({ message: "Data fetched", data: response });
+    res.status(201).json(response);
   } catch (err) {
     console.error("Error fetching theater, ", err);
     res.status(501).json({ message: "Internal Server Error" });

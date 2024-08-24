@@ -44,7 +44,7 @@ export const getMovieByIdController = async (
 export const getAllMoviesController = async (_: Request, res: Response) => {
   try {
     const response = await MovieModel.getAllMovies();
-    res.status(200).json({ message: "Movies fetched", data: response });
+    res.status(200).json(response);
   } catch (err) {
     console.error("Error fetching movies, ", err);
     res.status(501).json({ message: "Internal Server Error" });
@@ -77,7 +77,7 @@ export const getMoviesByMovieNameController = async (
   try {
     const movieName = req.params.movie;
     const response = await MovieModel.getMoviesByTitle(movieName);
-    res.status(200).json({ message: "Movies fetched", data: response });
+    res.status(200).json(response);
     if (!response) {
       res.status(404).json({ message: "Movie not found" });
     }

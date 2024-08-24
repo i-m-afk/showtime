@@ -47,12 +47,11 @@ export async function getUserById(client: Client, args: GetUserByIdArgs): Promis
 }
 
 export const createUserQuery = `-- name: CreateUser :one
-INSERT INTO users (userid, username, name, email, role, phone, password)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO users (username, name, email, role, phone, password)
+VALUES ($1, $2, $3, $4, $5, $6)
 returning userid, username, name, email, role, phone, password, created_at, updated_at`;
 
 export interface CreateUserArgs {
-    userid: string;
     username: string;
     name: string;
     email: string;
@@ -76,7 +75,7 @@ export interface CreateUserRow {
 export async function createUser(client: Client, args: CreateUserArgs): Promise<CreateUserRow | null> {
     const result = await client.query({
         text: createUserQuery,
-        values: [args.userid, args.username, args.name, args.email, args.role, args.phone, args.password],
+        values: [args.username, args.name, args.email, args.role, args.phone, args.password],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {

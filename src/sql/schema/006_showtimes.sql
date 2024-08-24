@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE showtimes (
-    showtimeid UUID PRIMARY KEY,
+    showtimeid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     movie_id INT NOT NULL REFERENCES movies(movieid)  ON DELETE CASCADE,
     language varchar(50),
     screen_id UUID NOT NULL REFERENCES screens(screenid) ON DELETE CASCADE,

@@ -66,3 +66,52 @@ export async function getShowsByTheater(client: Client, args: GetShowsByTheaterA
     });
 }
 
+export const createShowtimeQuery = `-- name: CreateShowtime :one
+INSERT into showtimes
+  (movie_id, language, screen_id, show_date, base_price, show_time)
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING showtimeid, movie_id, language, screen_id, show_date, base_price, show_time, created_at, updated_at`;
+
+export interface CreateShowtimeArgs {
+    movieId: number;
+    language: string | null;
+    screenId: string;
+    showDate: Date;
+    basePrice: string;
+    showTime: Date;
+}
+
+export interface CreateShowtimeRow {
+    showtimeid: string;
+    movieId: number;
+    language: string | null;
+    screenId: string;
+    showDate: Date;
+    basePrice: string;
+    showTime: Date;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function createShowtime(client: Client, args: CreateShowtimeArgs): Promise<CreateShowtimeRow | null> {
+    const result = await client.query({
+        text: createShowtimeQuery,
+        values: [args.movieId, args.language, args.screenId, args.showDate, args.basePrice, args.showTime],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        showtimeid: row[0],
+        movieId: row[1],
+        language: row[2],
+        screenId: row[3],
+        showDate: row[4],
+        basePrice: row[5],
+        showTime: row[6],
+        createdAt: row[7],
+        updatedAt: row[8]
+    };
+}
+

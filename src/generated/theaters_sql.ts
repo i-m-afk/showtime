@@ -5,12 +5,11 @@ interface Client {
 }
 
 export const addTheaterQuery = `-- name: AddTheater :one
-INSERT INTO theaters(theaterid, name, image, address, city, state, pin_code, latitude)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO theaters(name, image, address, city, state, pin_code, latitude)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 returning theaterid, name, image, address, city, state, pin_code, latitude, longitude, contact_number, created_at, updated_at`;
 
 export interface AddTheaterArgs {
-    theaterid: string;
     name: string;
     image: string | null;
     address: string;
@@ -38,7 +37,7 @@ export interface AddTheaterRow {
 export async function addTheater(client: Client, args: AddTheaterArgs): Promise<AddTheaterRow | null> {
     const result = await client.query({
         text: addTheaterQuery,
-        values: [args.theaterid, args.name, args.image, args.address, args.city, args.state, args.pinCode, args.latitude],
+        values: [args.name, args.image, args.address, args.city, args.state, args.pinCode, args.latitude],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -126,14 +125,17 @@ SELECT DISTINCT
     s.seats_left,
     m.movieid,
     m.title AS movie_title,
-    m.language AS movie_language
+    m.language AS movie_language,
+    st.show_date,
+    st.base_price
 FROM theaters t
 JOIN screens s ON t.theaterid = s.theater_id
 JOIN showtimes st ON s.screenid = st.screen_id
 JOIN movies m ON st.movie_id = m.movieid
 WHERE m.movieid = $1
   AND LOWER(t.city) = LOWER($2)
-  AND st.show_time > CURRENT_TIME`;
+  AND st.show_time > CURRENT_TIME
+ORDER BY st.show_date ASC`;
 
 export interface GetTheatersByMovieAndLocationArgs {
     movieid: number;
@@ -156,6 +158,8 @@ export interface GetTheatersByMovieAndLocationRow {
     movieid: number;
     movieTitle: string;
     movieLanguage: string | null;
+    showDate: Date;
+    basePrice: string;
 }
 
 export async function getTheatersByMovieAndLocation(client: Client, args: GetTheatersByMovieAndLocationArgs): Promise<GetTheatersByMovieAndLocationRow[]> {
@@ -180,7 +184,9 @@ export async function getTheatersByMovieAndLocation(client: Client, args: GetThe
             seatsLeft: row[11],
             movieid: row[12],
             movieTitle: row[13],
-            movieLanguage: row[14]
+            movieLanguage: row[14],
+            showDate: row[15],
+            basePrice: row[16]
         };
     });
 }

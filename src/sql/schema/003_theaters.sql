@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE theaters (
-    theaterid UUID PRIMARY KEY,
+    theaterid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     image VARCHAR(255),
     address TEXT NOT NULL,

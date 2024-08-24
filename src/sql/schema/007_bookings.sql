@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE bookings (
-    bookingid UUID PRIMARY KEY,
+    bookingid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(userid) ON DELETE CASCADE ,
     showtime_id UUID NOT NULL REFERENCES showtimes(showtimeid) ON DELETE CASCADE ,
     booking_time TIMESTAMP NOT NULL DEFAULT NOW(),

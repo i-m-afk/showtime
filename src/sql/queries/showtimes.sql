@@ -22,3 +22,8 @@ WHERE
     AND st.show_date >= DATE('now')
 ORDER BY
     st.show_date, st.show_time;
+
+-- name: CreateShowtime :one
+INSERT into showtimes
+  (movie_id, language, screen_id, show_date, base_price, show_time)
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
